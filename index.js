@@ -26,7 +26,7 @@ console.log("mongoDB link: " +mongo_link)
 
 MongoClient.connect(mongo_link, (err, client) =>{
 	if (err) return console.log(err)
-		db = client.db(config.mongodb.db_name)
+		db = client.db(process.eng.MONGO_DB)
 		console.log("Connected to MongoDB")
 
 	app.use(bodyParser.json());
