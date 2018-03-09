@@ -10,8 +10,8 @@
     "express": "^4.16.2",
     "mongodb": "^3.0.2",
     "npm": "^5.7.1"
-  }
+  },
   "scripts": {
-    "start": "index.js"
+    "start": "node index.js"
   }
 }
