@@ -18,8 +18,8 @@ const port = process.env.PORT || 8080;
 //app.use(bodyParser.urlencoded({extended: true}))
 
 //mongodb
-var mongo_link = "mongodb://"+config.mongodb.user_name+":"
-	+config.mongodb.user_pass+"@ds151070.mlab.com:51070/startpage-test";
+var mongo_link = "mongodb://"+process.env.MONGO_USER+":"
+	+process.env.MONGO_PW+"@ds151070.mlab.com:51070/startpage-test";
 
 console.log("mongoDB link: " +mongo_link)	
 
