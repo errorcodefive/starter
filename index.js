@@ -10,7 +10,7 @@ var MongoClient = require('mongodb').MongoClient
 var config = require('./config');
 var path = require ('path');
 
-const port = process.env.port || 8080;
+const port = process.env.PORT || 8080;
 
 //var Handlebars = require('handlebars');
 
