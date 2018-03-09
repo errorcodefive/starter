@@ -1,8 +1,11 @@
 var MongoClient = require('mongodb').MongoClient
 var config = require('../config');
+var request = require('request');
+var http = require('http');
+var fs = require('fs');
+var express = require('express');
 
 
-var rp = require('request-promise');
 var cheerio = require('cheerio');
 
 var environment = process.env.NODE_ENV || "test";
@@ -36,7 +39,7 @@ MongoClient.connect(mongo_link, (err, client)=>{
 	//get all bookmarks
 	var bm_list;
 	db.collection("bookmarks").find().toArray(function(err, result){
-		if(err) return console.log(err)
+		if (err) return console.log(err)
 		console.log("Pulled bookmarks");
 		bm_list = result;
 
@@ -46,26 +49,12 @@ MongoClient.connect(mongo_link, (err, client)=>{
 		for (var x =0; x<bm_list.length; x++){
 			//get url
 			var query_url = bm_list[x].bookmark_url
-			var options = {
-				uri: query_url,
-				transform: function(body){
-					return cheerio.load(body);
-				}
-			};
-
-			//pull html
-
-			rp(options)
-				.then(function(htmlString){
-					console.log(htmlString);
-				})
-				.catch(function(err){
-					console.log("link is broken");
-				});
-			//find favicon link
-			//download favicon link
-
-
+			var favicon_name = bm_list[x].bookmark_name + ".ico"
+			var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
+			  response.pipe(favicon_name);
+			});
+			query_url = 'http://www.google.com/s2/favicons?domain=' + query_url;
+			console.log(query_url);
 
 		};
 	});
