@@ -10,7 +10,7 @@ var MongoClient = require('mongodb').MongoClient
 var config = require('./config');
 var path = require ('path');
 
-
+const port = process.env.port || 8080;
 
 //var Handlebars = require('handlebars');
 
@@ -72,7 +72,7 @@ MongoClient.connect(mongo_link, (err, client) =>{
 
 	//app.use('/things', things);
 
-	app.listen(8080);
+	app.listen(port);
 	console.log('Running on http://localhost:8080');
 
 });
