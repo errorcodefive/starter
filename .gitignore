@@ -1,3 +1,4 @@
 node_modules/
 config.js
 config.py
+python_jobs/config_py.json

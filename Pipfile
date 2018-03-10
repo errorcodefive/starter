@@ -8,6 +8,7 @@ name = "pypi"
 [packages]
 
 pymongo = "*"
+"boto3" = "*"
 
 
 [dev-packages]
