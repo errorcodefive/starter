@@ -57,7 +57,6 @@ MongoClient.connect(mongo_link, (err, client)=>{
 	app.get('/', function (req, res) {
 		
 		//sending bookmarks
-
 		db.collection("bookmarks").find().toArray(function(err, result){{
 			if(err) throw err;
 			res.render('pages/main', {book_in: result});
@@ -66,7 +65,7 @@ MongoClient.connect(mongo_link, (err, client)=>{
 
 
 
-	//post from bookmarks form
+	//post from bookmarks form 
 	app.post('/add-bookmark', function(req, res){
 		bookmark_in = req.body
 		console.log(bookmark_in)

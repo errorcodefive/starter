@@ -55,16 +55,15 @@ for bm in bookmarks.find():
 	#download favicon
 	urllib.request.urlretrieve(fav_url, fav_name)
 	#upload to s3
-
-
-	client = boto3.client(
+	s3_client = boto3.client(
 		's3',
 		aws_access_key_id = access_key,
 		aws_secret_access_key = secret_key)
 
 	to_s3_icon = open(fav_name, 'rb')
-	s3=boto3.resource('s3')
-	s3.Bucket(bucket_name).put_object(Key=("bm/"+fav_name), Body = to_s3_icon)
+	s3_client.put_object(Bucket=bucket_name,Key=("bm/"+fav_name), Body = to_s3_icon)
 	print(fav_name + "Put out to S3")
+
 	#delete local favicon
 	
+	#assign key to db entry for bookmark
