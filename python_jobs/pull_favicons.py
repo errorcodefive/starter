@@ -46,7 +46,8 @@ bookmarks = db['bookmarks']
 print(bookmarks)
 
 for bm in bookmarks.find():
-	#get url
+	#get urlpymongo
+
 	print(bm['bookmark_url'])
 	fav_url = bm['bookmark_url']
 	fav_name = bm['bookmark_name']+'.ico'
@@ -64,7 +65,9 @@ for bm in bookmarks.find():
 	s3_client.put_object(Bucket=bucket_name,Key=("bm/"+fav_name), Body = to_s3_icon)
 	to_s3_icon.close()
 	print(fav_name + "Put out to S3")
-
 	#delete local favicon
 	os.remove(fav_name)
 	#assign key to db entry for bookmark
+	bookmarks.update_one({'bookmark_name': bm['bookmark_name']},
+		{'$set': {'bookmark_favicon': ("bm/"+fav_name)}})
+	print("mongodb updated")
