@@ -62,8 +62,9 @@ for bm in bookmarks.find():
 
 	to_s3_icon = open(fav_name, 'rb')
 	s3_client.put_object(Bucket=bucket_name,Key=("bm/"+fav_name), Body = to_s3_icon)
+	to_s3_icon.close()
 	print(fav_name + "Put out to S3")
 
 	#delete local favicon
-	
+	os.remove(fav_name)
 	#assign key to db entry for bookmark
