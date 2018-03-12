@@ -5,7 +5,8 @@ var app = express();
 var ejs = require('ejs');
 
 var bodyParser = require('body-parser');
-var MongoClient = require('mongodb').MongoClient
+var MongoClient = require('mongodb').MongoClient;
+var PythonShell = require('python-shell');
 //password file
 var config = require('./config');
 
@@ -15,9 +16,9 @@ const port = process.env.PORT || 8080;
 
 //var Handlebars = require('handlebars');
 
-var environment = process.env.NODE_ENV || "test"
+var environment = process.env.NODE_ENV || "test";
 
-console.log("ENVIRONMENT: " + environment)
+console.log("ENVIRONMENT: " + environment);
 //local vs production
 if (process.env.NODE_ENV == "production"){
 	mongo_user = process.env.MONGO_USER;
@@ -40,7 +41,7 @@ if (process.env.NODE_ENV == "production"){
 var mongo_link = "mongodb://"+mongo_user+":"
 	+mongo_pw+"@ds151070.mlab.com:51070/startpage-test";
 
-console.log("mongoDB link: " +mongo_link)	
+console.log("mongoDB link: " +mongo_link)	;
 
 MongoClient.connect(mongo_link, (err, client)=>{
 	if (err) return console.log(err)
@@ -69,10 +70,14 @@ MongoClient.connect(mongo_link, (err, client)=>{
 	app.post('/add-bookmark', function(req, res){
 		bookmark_in = req.body
 		console.log(bookmark_in)
-
+ 
 		db.collection("bookmarks").insertOne(bookmark_in, function(err, res){
 			if (err) throw err;
 			console.log("1 bookmark added");
+			PythonShell.run('python_jobs/pull_favicons.py', function(err){
+				if(err) throw err;
+				console.log("pull_favicons job done");
+			});
 		});
 
 		db.collection("bookmarks").find().toArray(function(err, result){{
@@ -87,17 +92,17 @@ MongoClient.connect(mongo_link, (err, client)=>{
 		// })});
 	});
 
+	//getting bookmarks for ajax request from list
+	app.get('/api/bm', function(req, res){
+		db.collection("bookmarks").find().tostring(function(err, result){
+			if (err) throw err;
+			res.json(result);
+		});
 
+	});
 	//app.use('/things', things);
 
 	app.listen(port);
 	console.log('Running on http://localhost:8080');
 
 });
-
-function renderMain(db, res){
-	db.collection("bookmarks").find().toArray(function(err,result){{
-		if(err) throw err;
-		res.render('pages/main', {book_in: result});
-	}})
-};

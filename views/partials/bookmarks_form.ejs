@@ -1,11 +1,24 @@
 <!-- add validations on empty -->
+<!-- jquery to send data to server side -->
 
-<form action="/add-bookmark" method="post">
+<script type = "text/javascript">
+		$(document).ready(function(){
+			console.log("here");
+			$('button#bm-submit').click( function(){
+				server_url = window.location.protocol + "//" + window.location.host + "/add-bookmark";
+				console.log("server url is : " + server_url);
+			});
+		});
+</script>
+
+
+<form id="bm-form">
 	URL: <br>
 	<input type="text" name="bookmark_url"><br>
 	Name: <br>
-	<input type="text", name="bookmark_name"><br>
-	<input type = "submit" value = "Submit">
+	<input type="text" name="bookmark_name"><br>
+	<button id="bm-submit" type = "button">Submit</button>
  </form>
+</div> 
 
  <% include bookmarks_list %>
