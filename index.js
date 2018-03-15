@@ -95,7 +95,7 @@ MongoClient.connect(mongo_link, (err, client)=>{
 		
 		console.log(bm['name']);
 
-		db.collection("bookmarks").deleteMany({ 'bookmark_name': bm['name'] }, function(err, obj){
+		db.collection("bookmarks").deleteMany({ 'bookmark_name' : bm['name'] }, function(err, obj){
 			if(err) throw err;
 			console.log(obj.result);
 			res.send(obj.result.n+" documents deleted");
@@ -107,10 +107,7 @@ MongoClient.connect(mongo_link, (err, client)=>{
 
 	//getting bookmarks for ajax request from list
 	app.get('/api/bm', function(req, res){
-
-
-
-		db.collection("bookmarks").find({}).toArray(function(err, result){
+		db.collection("bookmarks").find({}).sort({ 'bookmark_name' : 1}).toArray(function(err, result){
 			if(err) throw err;
 			res.send(result)
 		});
