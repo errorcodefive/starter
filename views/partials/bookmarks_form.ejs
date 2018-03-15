@@ -2,21 +2,49 @@
 <!-- jquery to send data to server side -->
 
 <script type = "text/javascript">
+
 		$(document).ready(function(){
 			console.log("here");
 			$('button#bm-submit').click( function(){
 				server_url = window.location.protocol + "//" + window.location.host + "/add-bookmark";
-				console.log("server url is : " + server_url);
+
+
+				//On button click - validate form inputs
+
+				//Convert to JSON
+				bmFormJSON = {'bookmark_name': $('#bm_name').val(), 'bookmark_url': $('#bm_url').val()};
+				
+				//send to server_url (add-bookmark) via post
+				$.post(server_url, bmFormJSON, function(){
+					//get from server data for bookmark_list]
+					server_url = window.location.protocol +"//"+window.location.host+ "/api/bm";
+
+
+					$.ajax({url: server_url, success: function(res){
+						createBMList(res);
+
+					}});
+					
+
+				});
+			
+
 			});
 		});
+
+		function refreshBMList(){
+			console.log("Refreshing BM List");
+		}
+
 </script>
+
 
 
 <form id="bm-form">
 	URL: <br>
-	<input type="text" name="bookmark_url"><br>
+	<input id="bm_url" type="text" name="bookmark_url"><br>
 	Name: <br>
-	<input type="text" name="bookmark_name"><br>
+	<input id="bm_name" type="text" name="bookmark_name"><br>
 	<button id="bm-submit" type = "button">Submit</button>
  </form>
 </div> 

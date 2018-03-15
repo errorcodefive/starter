@@ -1,3 +1,51 @@
+<script type = "text/javascript">
+	$(document).ready(function(){
+		//refresh bm list
+		//server_url = window.location.protocol + "//" + window.location.host + "/api/bm";
+		//console.log(server_url);
+		console.log("calling the get request to: " + window.location.protocol + "//" + window.location.host + "/api/bm");
+
+		$.ajax({
+			type: 'GET',
+		    url: window.location.protocol + "//" + window.location.host + "/api/bm",
+		    dataType: "json",
+		    success: function(data){
+		    	console.log("it finally worked");
+		    	console.log(data);
+		    },
+		    error: function(XMLHttpRequest, status, err){
+		    	console.log('error', err);
+		    }
+		});
+			
+
+	});
+
+	function createBMList(bookmarks_collection){
+		var bmList = $('#bm-list');
+		console.log("inside createBMList function");
+		$.each(bookmarks_collection, function(bookmark){
+			console.log("bookmark document:" + bookmark);
+			var bm_div = $('<div/>')
+				.addClass('bm-div')
+				.appendTo(bmList);
+
+			var ahref = $('<a/>')
+				.attr('href', bookmark.bookmark_url)
+				.appendTo(bm_div);
+			ahref.text(bookmark_name);
+
+			var img = $('<img/>')
+				.addClass('bookmark_favicon')
+				.attr('src', bookmark.bookmark_favicon)
+				.prependTo(ahref);
+		});
+	};
+
+</script>
+
+
+
 <div id = "bm-list">
 	
 

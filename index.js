@@ -94,9 +94,12 @@ MongoClient.connect(mongo_link, (err, client)=>{
 
 	//getting bookmarks for ajax request from list
 	app.get('/api/bm', function(req, res){
-		db.collection("bookmarks").find().tostring(function(err, result){
-			if (err) throw err;
-			res.json(result);
+		console.log("get request received: "+req);
+
+		db.collection("bookmarks").find({}).toArray(function(err, result){
+			if(err) throw err;
+			console.log(result);
+			res.send(result)
 		});
 
 	});
