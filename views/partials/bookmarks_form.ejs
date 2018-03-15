@@ -4,7 +4,6 @@
 <script type = "text/javascript">
 
 		$(document).ready(function(){
-			console.log("here");
 			$('button#bm-submit').click( function(){
 				server_url = window.location.protocol + "//" + window.location.host + "/add-bookmark";
 
@@ -21,8 +20,7 @@
 
 
 					$.ajax({url: server_url, success: function(res){
-						createBMList(res);
-
+						refreshBMList();
 					}});
 					
 
@@ -34,6 +32,7 @@
 
 		function refreshBMList(){
 			console.log("Refreshing BM List");
+			refreshBMList();
 		}
 
 </script>

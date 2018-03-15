@@ -86,21 +86,35 @@ MongoClient.connect(mongo_link, (err, client)=>{
 			res.render('pages/main', {book_in: result});
 		}});
 
-		// res.render('partials/bookmarks_list', { book_in: db.collection("bookmarks").find({}).toArray(function(err, result){
-		// 	if(err) throw err;
 
-		// })});
+	});
+
+	app.post('/api/bm-del', function(req,res){
+		console.log("Post delete bm request recevied");
+		bm = JSON.parse(JSON.stringify(req.body));
+		
+		console.log(bm['name']);
+
+		db.collection("bookmarks").deleteMany({ 'bookmark_name': bm['name'] }, function(err, obj){
+			if(err) throw err;
+			console.log(obj.result);
+			res.send(obj.result.n+" documents deleted");
+		});
+		//bm_parse = JSON.parse(bm_name);
+
+		
 	});
 
 	//getting bookmarks for ajax request from list
 	app.get('/api/bm', function(req, res){
-		console.log("get request received: "+req);
+
+
 
 		db.collection("bookmarks").find({}).toArray(function(err, result){
 			if(err) throw err;
-			console.log(result);
 			res.send(result)
 		});
+
 
 	});
 	//app.use('/things', things);
