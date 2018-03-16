@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Login</title> 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script>
+			$(document).ready(function(){
+				$('button#login-submit').click(function(){
+					server_url=window.location.protocol+"//"+window.location.host+"/pw";
+					//On button click validate form inputs
+					pwFormJSON={'email': $('input#email').val(), 'password': $('input#password').val()};
+
+					$.post(server_url, pwFormJSON, function(res){
+						//what happens after sending
+						console.log("sent pw and email");
+						location.reload();
+					});
+				});
+			});
+		</script>
+
+
+		
+	</head>
+
+	<body>
+		<h4>
+			<form class="login">
+				Email: <br>
+				<input type="text" id="email">
+				<br>
+				Password: <br>
+				<input type="text" id="password">
+				<br>
+				<button id = "login-submit" type="button">Login</button>
+			</form>
+		</h4>
+	</body>
+</html>
