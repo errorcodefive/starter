@@ -45,7 +45,10 @@
 				.appendTo(bmList);
 
 			var ahref = $('<a/>')
-				.attr('href', bookmarks_collection[x].bookmark_url)
+				.attr({
+					'href': bookmarks_collection[x].bookmark_url,
+					'target': '_blank'
+				})
 				.addClass('bm-ahref')
 				.appendTo(bm_div);
 			ahref.text(bookmarks_collection[x].bookmark_name);

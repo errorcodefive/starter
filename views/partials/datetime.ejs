@@ -1,0 +1,67 @@
+<script>
+	$(document).ready(function(){
+
+		updateTime();
+
+		function dayOfWeek(n){
+			dayArray = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+			return dayArray[n];
+		}
+
+		function monthOfYear(n){
+			mS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+			return mS[n];
+		}
+
+		function updateTime(){
+			var today = new Date();
+			var h = today.getHours();
+			var m = today.getMinutes();
+
+			if(m<10){
+				m="0"+m;
+			}
+
+			if(h>12 || h==0){
+				$('font#ampm').text("PM");
+
+				h-=12;
+			} else{
+				$('font#ampm').text("AM");
+			}
+
+			$('font#hour-min').text(h+":"+m);
+			$('font#day').text(dayOfWeek(today.getDay()));
+			$('font#monthday').text(monthOfYear(today.getMonth())+" "+today.getDate());
+
+
+
+			var t = setTimeout(updateTime, 1000);
+		}
+	});
+
+
+</script>
+
+
+<div id="datetime">
+	<div id="time">
+		<font id="hour-min"></font>
+		<font id="ampm"></font>
+		<font id="timezone"></font>
+
+		<div id="timezone-select">
+		</div>
+	</div>
+
+	<div id ="date">
+		<font id="day"></font>
+		<font id="monthday"></font>
+	</div>
+
+<!-- 	<div class="countdown" id = "market_open">
+	</div>
+
+	<div class="countdown" id="market_close">
+	</div> -->
+</div>

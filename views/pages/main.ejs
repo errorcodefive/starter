@@ -9,9 +9,7 @@
 			//Takes a string as a parameter
 
 			function refreshAlert(inputString){
-				$('div#top-alert').click(function(){
-					$('div#top-alert').text(inputString);
-				});
+				$('div#top-alert').text(inputString);
 			};
 
 		</script>
@@ -20,6 +18,7 @@
 	<link href="./styles/hello.css" rel="stylesheet">
 	<body>
 		<% include ../partials/alert %>
+		<% include ../partials/datetime %>
 		<% include ../partials/hello %>
 		<% include ../partials/bookmarks_form %>
 	</body>
