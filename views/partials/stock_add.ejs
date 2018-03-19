@@ -1,0 +1,95 @@
+<script>
+
+$(document).ready(function(){
+	checkHideExtra();
+
+	$('button#holdingsAdd').click(function(){
+		console.log("button clicked");
+		sendStocks()}
+	);
+
+
+});
+
+//function to post data to server
+function sendStocks(){
+	stSymbol = $('input#symbol').val();
+	console.log("sysymbol:" + stSymbol);
+	stType = $('select#stockCrypto').val();
+	stHolding = $('select#boughtWatchlist').val();
+	stShares= $('input#numShares').val();
+	stPrice=$('input#sharePrice').val();
+	stComm=$('input#comm').val();
+
+	stFormJSON = {
+		'symbol' : stSymbol, 
+		'type' : stType, 
+		'holding' : stHolding,
+		'shares': stShares,
+		'price': stPrice,
+		'commission' : stComm
+	};
+	console.log(stFormJSON);
+	server_url = window.location.protocol + "//" + window.location.host+ "/add-stock";
+	$.post(server_url, stFormJSON, function(){
+		console.log("sent out stocks");
+	});
+}
+//on button click
+	
+//check if bought or watchlist
+
+//compile all data into json
+
+//post to server
+
+//receive confirmation
+
+function checkHideExtra(){
+
+	selection = $('select#boughtWatchlist').val();
+	console.log("value:" + selection);
+	if (selection=='bought'){
+		$('div#bought_extra').show();
+		$('div#shares input#numShares').val(0);
+		$('div#price input#sharePrice').val(0);
+		$('div#commission input#comm').val(0);
+	} else{
+		$('div#bought_extra').hide();
+		$('div#shares input#numShares').val(0);
+		$('div#price input#sharePrice').val(0);
+		$('div#commission input#comm').val(0);
+	}
+}
+</script>
+
+<div id="stock_add">
+	<div class="dropdown">
+		<select id="stockCrypto">
+			<option value="stock">Stock</option>
+			<option value="crypto">Crypto</option>
+		</select>
+	</div>
+	<div id="symbol">
+		Symbol:<input type="text" id="symbol">
+	</div>
+	<div class="dropdown">
+		<select id="boughtWatchlist" onchange="checkHideExtra()">
+			<option value="bought">Bought</option>
+			<option value="watchlist">Watchlist</option>
+		</select>
+	</div>
+
+	<div id="bought_extra">
+		<div id="shares">
+			# of Shares: <input type="text" id="numShares" value=0>
+		</div>
+		<div id="price">
+			Share Price: <input type="text" id="sharePrice" value=0>
+		</div>
+		<div id="commission">
+			Commission: <input type="text" id="comm" value=0>
+		</div>
+	</div>
+	<button id="holdingsAdd" type="button">Add</button>
+</div>

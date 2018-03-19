@@ -36,7 +36,6 @@ if (process.env.NODE_ENV == "production"){
 
 var sess;
 
-
 //bodyParser
 //app.use(bodyParser.urlencoded({extended: true}))
 
@@ -108,16 +107,23 @@ MongoClient.connect(mongo_link, (err, client)=>{
  
 		db.collection("bookmarks").insertOne(bookmark_in, function(err, res){
 			if (err) throw err;
-			console.log("1 bookmark added");
 			PythonShell.run('python_jobs/pull_favicons.py', function(err){
 				if(err) throw err;
-				console.log("pull_favicons job done");
 			});
 		});
-
 		renderMain(res);
+	});
 
-
+	app.post('/add-stock', function(req,res){
+		stock_in = req.body['symbol'];
+		db.collection("stocks").update(
+			{'symbol': stock_in}, 
+			{"$set": req.body},
+			{upsert: true},
+			function(err, response){
+			if(err) throw err;
+			console.log("sent to mongo");
+		});
 	});
 
 	app.post('/api/bm-del', function(req,res){
