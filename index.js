@@ -152,32 +152,14 @@ MongoClient.connect(mongo_link, (err, client)=>{
 			res.send(result)
 		});
 	});
-	
+	//For alpha vantage API
 	app.get('/api/st', function(req, res){
 		//get symbol list
 		var symbolList = [];
-		var returnJSON ={};
-		apicall = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&";
+		console.log("get respoonse data is: " + res.data);
 		db.collection("stocks").find().toArray(function(err, result){
-			if(err) throw err;
-			
-			for (var x=0; x<result.length;x++){
-				console.log("adding symbol: "+ result[x].symbol);
-				symbolList.push(result[x].symbol);
-			}
-
-			for(var x=0; x<symbolList.length;x++){
-				
-			}
-
+			res.send(result);
 		});
-
-
-		//for each symbol
-
-		//create an api call
-
-		//get relevant info
 	});
 
 
@@ -202,6 +184,9 @@ function checkAuth(req, res, next){
 	}
 	next();
 }
+
+
+//alpha vantage API
 function getStock(stock, params){
 	alpha_link = "https://www.alphavantage.co/query?function=";
 	alpha_func = "";
@@ -213,8 +198,8 @@ function getStock(stock, params){
 	} else{
 		alpha_func="TIME_SERIES_MONTHLY_ADJUSTED"
 	}
-
 	//construct api request
-
-
+	//should be this format: 
+	//https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=MSFT&apikey=demo
+	alpha_link += alpha_func + "&symbol="+ alpha_stock + "&apikey=" + stockapikey
 }

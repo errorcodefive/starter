@@ -7,8 +7,15 @@ $(document).ready(function(){
 		sendStocks()}
 	);
 
-	refreshSTList();
+	$('button#refresh_stocks').click(function(){
+		refreshGraphs();
+	});
+	createSTList();
 });
+
+//make an API call once every minute
+
+
 
 //function to post data to server
 function sendStocks(){
@@ -51,53 +58,82 @@ function checkHideExtra(){
 	}
 }
 
-function refreshSTList(){
-	console.log("refreshing st list");
+function createSTList(){
 	$.ajax({
 		type: 'GET',
 		url: window.location.protocol + "//" + window.location.host + "/api/st",
+		data: "day",
 		dataType: "json",
 		success: function(data){
-			createSTList(data);
+			console.log("creating div tables");
+
+			var stList = $('#stockList');
+			$('div.stDiv').remove();
+			for(var x = 0; x<data.length; x++){
+				if(data[x].type = "stock"){
+					url = "https://ca.finance.yahoo.com/quote/"+data[x].symbol
+				}else if (data[x].type="crypto"){
+					url = "https://coinmarketcap.com/currencies/"+data[x].symbol
+				};
+				console.log("name: " + data[x].symbol.toUpperCase());
+				var stDiv=$('<div/>')
+					.addClass('stDiv')
+					.appendTo(stList)
+					.attr('id', data[x].symbol);
+
+				var ahref=$('<a/>')
+					.attr({
+						'href':url,
+						'target': '_blank' 
+					})
+					.addClass('stAHref')
+					.appendTo(stDiv);
+				ahref.text(data[x].symbol.toUpperCase());
+				var edit=$('<button/>')
+					.addClass('stDel')
+					.attr('value', data[x].symbol)
+					.appendTo(stDiv);
+				edit.text("Edit");
+			};
 		},
 		error: function(XMLHttpRequest, status, err){
 			console.log('error', err);	
 		}
 	});
+
+
 }
 
-function createSTList(stCollection){
-	var stList = $('#stockList');
-	$('div.stDiv').remove();
-	for(var x = 0; x<stCollection.length; x++){
-		if(stCollection[x].type = "stock"){
-			url = "https://ca.finance.yahoo.com/quote/"+stCollection[x].symbol
-		}else if (stCollection[x].type="crypto"){
-			url = "https://coinmarketcap.com/currencies/"+stCollection[x].symbol
-		};
+function refreshGraphs(){
+	console.log("refrehsing graaphs");
+	$('div.stDiv').each(function(){
+		//for each existing div
 
-		var stDiv=$('<div/>')
-			.appendClass('stDiv')
-			.appendTo(bmList);
+		//put in an ajax get to our server
 
-		var ahref=$('<a/>')
-			.attr({
-				'href':url,
-				'target': '_blank' 
-			})
-			.addClass('stAHref')
-			.appendTo('stDiv');
-		ahref.text(stCollection[x].symbol.toUpperCase());
-		var edit=$('<button/>')
-			.addClass('stDel')
-			.attr('value', stCollection[x].symbol)
-			.appendTo(stDiv);
-		edit.text("Edit");
+		$.ajax({
+			type: 'GET',
+			url: window.location.protocol + "//" + window.location.host + "/api/st",
+			data: "day",
+			dataType: "json",
+			success: function(data){
+				createSTList(data);
+			},
+			error: function(XMLHttpRequest, status, err){
+				console.log('error', err);	
+			}
+		});
 
-	};
+
+		//receive data from our server
+
+		//display data from our server in a new div within stDiv
+
+		//display graph in stDiv
+	});
 }
 </script>
-
+<button id="refresh_stocks"> Refresh </button>
 <div id='stockList'>
 	
 </div>
