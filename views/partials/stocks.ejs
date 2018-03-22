@@ -113,11 +113,12 @@ function refreshGraphs(){
 
 		$.ajax({
 			type: 'GET',
-			url: window.location.protocol + "//" + window.location.host + "/api/st",
-			data: "day",
+			url: window.location.protocol + "//" + window.location.host + "/api/st_graph",
+			data: {"timeline":"day"},
 			dataType: "json",
 			success: function(data){
-				createSTList(data);
+				console.log("data received");
+
 			},
 			error: function(XMLHttpRequest, status, err){
 				console.log('error', err);	

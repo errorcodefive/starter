@@ -1,7 +1,7 @@
 var express = require('express');
 var session = require('express-session');
 var bcrypt = require('bcrypt');
-
+var request = require('request');
 
 var app = express();
 
@@ -155,11 +155,28 @@ MongoClient.connect(mongo_link, (err, client)=>{
 	//For alpha vantage API
 	app.get('/api/st', function(req, res){
 		//get symbol list
-		var symbolList = [];
-		console.log("get respoonse data is: " + res.data);
+
 		db.collection("stocks").find().toArray(function(err, result){
 			res.send(result);
 		});
+	});
+
+	app.get('/api/st_graph', function(req, res){
+		var raw_data={};
+		console.log("Timeline is: " + req.query.timeline);
+		timeSeries = req.query.timeline;
+		db.collection("stocks").find().toArray(function(err,result){
+			var symbolList=[];
+			for (var x = 0; x<result.length; x++){
+				//add params
+				console.log("calling combinedholdings");
+				getCombinedHoldings(result[x].symbol, timeSeries, result[x].type);
+			};
+		});
+
+		
+
+
 	});
 
 
@@ -185,12 +202,25 @@ function checkAuth(req, res, next){
 	next();
 }
 
+function getCombinedHoldings(name, params, stockOrCrypto){
+	if (stockOrCrypto == "stock"){
+		//get api url using getStock
+		console.log("calling getStock");
+		getStock(name, params);
 
+	} else if (stockOrCrypto =="crypto"){
+		//get api url using getCrypto
+
+		//REFORMAT JSON FROM API TO BE SAME AS THE STOCK
+
+	};
+}
 //alpha vantage API
-function getStock(stock, params){
+function getStock(holding, params){
+	console.log("inside GetStock");
 	alpha_link = "https://www.alphavantage.co/query?function=";
 	alpha_func = "";
-	alpha_stock = stock;
+	alpha_stock = holding;
 	if (params == "day"){
 		alpha_func="TIME_SERIES_DAILY_ADJUSTED"
 	} else if (params =="month"){
@@ -202,4 +232,11 @@ function getStock(stock, params){
 	//should be this format: 
 	//https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=MSFT&apikey=demo
 	alpha_link += alpha_func + "&symbol="+ alpha_stock + "&apikey=" + stockapikey
+	console.log("getstockurl: " + alpha_link);
+	request(alpha_link, function (err, res, body){
+		if (err) throw err;
+		//console.log(body);
+	});
+
+
 }
