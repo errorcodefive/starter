@@ -1,0 +1,103 @@
+<script>
+
+$(document).ready(function(){
+	checkHideExtra();
+
+	$('button#holdingsAdd').click(function(){
+		sendStocks()}
+	);
+
+	refreshSTList();
+});
+
+//function to post data to server
+function sendStocks(){
+	stSymbol = $('input#symbol').val();
+	console.log("sysymbol:" + stSymbol);
+	stType = $('select#stockCrypto').val();
+	stHolding = $('select#boughtWatchlist').val();
+	stShares= $('input#numShares').val();
+	stPrice=$('input#sharePrice').val();
+	stComm=$('input#comm').val();
+
+	stFormJSON = {
+		'symbol' : stSymbol, 
+		'type' : stType, 
+		'holding' : stHolding,
+		'shares': stShares,
+		'price': stPrice,
+		'commission' : stComm
+	};
+	console.log(stFormJSON);
+	server_url = window.location.protocol + "//" + window.location.host+ "/add-stock";
+	$.post(server_url, stFormJSON, function(){
+		console.log("sent out stocks");
+	});
+}
+function checkHideExtra(){
+
+	selection = $('select#boughtWatchlist').val();
+	console.log("value:" + selection);
+	if (selection=='bought'){
+		$('div#bought_extra').show();
+		$('div#shares input#numShares').val(0);
+		$('div#price input#sharePrice').val(0);
+		$('div#commission input#comm').val(0);
+	} else{
+		$('div#bought_extra').hide();
+		$('div#shares input#numShares').val(0);
+		$('div#price input#sharePrice').val(0);
+		$('div#commission input#comm').val(0);
+	}
+}
+
+function refreshSTList(){
+	console.log("refreshing st list");
+	$.ajax({
+		type: 'GET',
+		url: window.location.protocol + "//" + window.location.host + "/api/st",
+		dataType: "json",
+		success: function(data){
+			createSTList(data);
+		},
+		error: function(XMLHttpRequest, status, err){
+			console.log('error', err);	
+		}
+	});
+}
+
+function createSTList(stCollection){
+	var stList = $('#stockList');
+	$('div.stDiv').remove();
+	for(var x = 0; x<stCollection.length; x++){
+		if(stCollection[x].type = "stock"){
+			url = "https://ca.finance.yahoo.com/quote/"+stCollection[x].symbol
+		}else if (stCollection[x].type="crypto"){
+			url = "https://coinmarketcap.com/currencies/"+stCollection[x].symbol
+		};
+
+		var stDiv=$('<div/>')
+			.appendClass('stDiv')
+			.appendTo(bmList);
+
+		var ahref=$('<a/>')
+			.attr({
+				'href':url,
+				'target': '_blank' 
+			})
+			.addClass('stAHref')
+			.appendTo('stDiv');
+		ahref.text(stCollection[x].symbol.toUpperCase());
+		var edit=$('<button/>')
+			.addClass('stDel')
+			.attr('value', stCollection[x].symbol)
+			.appendTo(stDiv);
+		edit.text("Edit");
+
+	};
+}
+</script>
+
+<div id='stockList'>
+	
+</div>

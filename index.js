@@ -2,6 +2,7 @@ var express = require('express');
 var session = require('express-session');
 var bcrypt = require('bcrypt');
 
+
 var app = express();
 
 var ejs = require('ejs');
@@ -26,12 +27,14 @@ if (process.env.NODE_ENV == "production"){
 	mongo_user = process.env.MONGO_USER;
 	mongo_pw = process.env.MONGO_PW;
 	mongo_db = process.env.MONGO_DB;
-	session_secret = process.env.SESSION_SECRET
+	session_secret = process.env.SESSION_SECRET;
+	stockapikey = process.env.ALPHA_VANTAGE_KEY;
 } else {
 	mongo_user = config.mongodb.user_name;
 	mongo_pw = config.mongodb.user_pass;
 	mongo_db = config.mongodb.db_name;
 	session_secret = config.sessions.secret;
+	stockapikey = config.alphavantage.apikey;
 }
 
 var sess;
@@ -148,10 +151,35 @@ MongoClient.connect(mongo_link, (err, client)=>{
 			if(err) throw err;
 			res.send(result)
 		});
-
-
 	});
-	//app.use('/things', things);
+	
+	app.get('/api/st', function(req, res){
+		//get symbol list
+		var symbolList = [];
+		var returnJSON ={};
+		apicall = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&";
+		db.collection("stocks").find().toArray(function(err, result){
+			if(err) throw err;
+			
+			for (var x=0; x<result.length;x++){
+				console.log("adding symbol: "+ result[x].symbol);
+				symbolList.push(result[x].symbol);
+			}
+
+			for(var x=0; x<symbolList.length;x++){
+				
+			}
+
+		});
+
+
+		//for each symbol
+
+		//create an api call
+
+		//get relevant info
+	});
+
 
 	app.listen(port);
 	console.log('Running on http://localhost:8080');
@@ -159,11 +187,11 @@ MongoClient.connect(mongo_link, (err, client)=>{
 });
 
 function renderMain(res){
-	db.collection("bookmarks").find().toArray(function(err, result){{
+	db.collection("bookmarks").find().toArray(function(err, result){
 		console.log("redirecting to pages/main");
 		if(err) throw err;
 		res.render('pages/main', {book_in: result});
-	}});
+	});
 }
 
 function checkAuth(req, res, next){
@@ -173,4 +201,20 @@ function checkAuth(req, res, next){
 		return;
 	}
 	next();
+}
+function getStock(stock, params){
+	alpha_link = "https://www.alphavantage.co/query?function=";
+	alpha_func = "";
+	alpha_stock = stock;
+	if (params == "day"){
+		alpha_func="TIME_SERIES_DAILY_ADJUSTED"
+	} else if (params =="month"){
+		alpha_func="TIME_SERIES_WEEKLY_ADJUSTED"
+	} else{
+		alpha_func="TIME_SERIES_MONTHLY_ADJUSTED"
+	}
+
+	//construct api request
+
+
 }
