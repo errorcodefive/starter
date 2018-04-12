@@ -2,13 +2,14 @@
 
 $(document).ready(function(){
 	checkHideExtra();
-
+	console.log("page loaded");
 	$('button#holdingsAdd').click(function(){
-		sendStocks()}
-	);
+		sendStocks();
+	});
 
 	$('button#refresh_stocks').click(function(){
-		refreshGraphs();
+		console.log("refresh stock button clicked");
+		refreshCurrentPrice();
 	});
 	createSTList();
 });
@@ -71,29 +72,39 @@ function createSTList(){
 			$('div.stDiv').remove();
 			for(var x = 0; x<data.length; x++){
 				if(data[x].type = "stock"){
-					url = "https://ca.finance.yahoo.com/quote/"+data[x].symbol
-				}else if (data[x].type="crypto"){
-					url = "https://coinmarketcap.com/currencies/"+data[x].symbol
+					url = "https://ca.finance.yahoo.com/quote/"+data[x].symbol;
+				
+					console.log("name: " + data[x].symbol.toUpperCase());
+					var stDiv=$('<div/>')
+						.addClass('stDiv')
+						.appendTo(stList)
+						.attr('id', data[x].symbol);
+					//link to yahoo finance
+					var ahref=$('<a/>')
+						.attr({
+							'href':url,
+							'target': '_blank' 
+						})
+						.addClass('stAHref')
+						.appendTo(stDiv);
+					ahref.text(data[x].symbol.toUpperCase());
+					//current price (green if up, red if low)
+					var currPrice=$('<u/>')
+						.addClass('currPrice')
+						.appendTo(ahref)
+						.attr('value', data[x].symbol);
+					//edit button to change details
+					var edit=$('<button/>')
+						.addClass('stDel')
+						.attr('value', data[x].symbol)
+						.appendTo(stDiv);
+					edit.text("Edit");
+					//graph div to contain the upcoming graph
+					var st_graph=$('<div/>')
+						.addClass('stockGraph')
+						.attr('value', data[x].symbol)
+						.appendTo(stDiv);
 				};
-				console.log("name: " + data[x].symbol.toUpperCase());
-				var stDiv=$('<div/>')
-					.addClass('stDiv')
-					.appendTo(stList)
-					.attr('id', data[x].symbol);
-
-				var ahref=$('<a/>')
-					.attr({
-						'href':url,
-						'target': '_blank' 
-					})
-					.addClass('stAHref')
-					.appendTo(stDiv);
-				ahref.text(data[x].symbol.toUpperCase());
-				var edit=$('<button/>')
-					.addClass('stDel')
-					.attr('value', data[x].symbol)
-					.appendTo(stDiv);
-				edit.text("Edit");
 			};
 		},
 		error: function(XMLHttpRequest, status, err){
@@ -105,12 +116,8 @@ function createSTList(){
 }
 
 function refreshGraphs(){
-	console.log("refrehsing graaphs");
-	$('div.stDiv').each(function(){
-		//for each existing div
-
+	console.log("refreshing graaphs");
 		//put in an ajax get to our server
-
 		$.ajax({
 			type: 'GET',
 			url: window.location.protocol + "//" + window.location.host + "/api/st_graph",
@@ -118,23 +125,39 @@ function refreshGraphs(){
 			dataType: "json",
 			success: function(data){
 				console.log("data received");
-
 			},
 			error: function(XMLHttpRequest, status, err){
 				console.log('error', err);	
 			}
 		});
-
-
 		//receive data from our server
 
 		//display data from our server in a new div within stDiv
 
 		//display graph in stDiv
+}
+function refreshCurrentPrice(){
+	getCurrentPrice();
+}
+function getCurrentPrice(){
+	console.log("getting current price");
+	$.ajax({
+		type: 'GET',
+		url: window.location.protocol+"//"+window.location.host+"/api/st_graph",
+		data: {"timeline": "current"},
+		dataType: "json",
+		success: function(data){
+			console.log("data received from getCurrentPrice");
+			refreshCurrentPrice(data);
+		},
+		error: function(XMLHttpRequest, status, err){
+			console.log('data not recevied from getCurrentPrice' + err);
+		}
+
 	});
 }
 </script>
-<button id="refresh_stocks"> Refresh </button>
+<button id="refresh_stocks">Refresh</button>
 <div id='stockList'>
-	
+
 </div>

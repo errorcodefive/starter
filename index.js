@@ -140,9 +140,7 @@ MongoClient.connect(mongo_link, (err, client)=>{
 			console.log(obj.result);
 			res.send(obj.result.n+" documents deleted");
 		});
-		//bm_parse = JSON.parse(bm_name);
-
-		
+		//bm_parse = JSON.parse(bm_name);	
 	});
 
 	//getting bookmarks for ajax request from list
@@ -155,8 +153,8 @@ MongoClient.connect(mongo_link, (err, client)=>{
 	//For alpha vantage API
 	app.get('/api/st', function(req, res){
 		//get symbol list
-
 		db.collection("stocks").find().toArray(function(err, result){
+			console.log("sending stocks list");
 			res.send(result);
 		});
 	});
@@ -173,10 +171,18 @@ MongoClient.connect(mongo_link, (err, client)=>{
 				getCombinedHoldings(result[x].symbol, timeSeries, result[x].type);
 			};
 		});
-
-		
-
-
+	});
+	//function to get current price
+	app.get('/api/st_current', function(req, res){
+		var raw_data={};
+		db.collection("stocks").find().toArray(function(err,result){
+			var symbolList=[];
+			for (var x = 0; x<result.length; x++){
+				//add params
+				console.log("calling combinedholdings");
+				getCombinedHoldings(result[x].symbol, "current", result[x].type);
+			};
+		});
 	});
 
 
@@ -215,28 +221,65 @@ function getCombinedHoldings(name, params, stockOrCrypto){
 
 	};
 }
+function getCrypto(holding, params){
+	console.log("inside getCrypto");
+	//get daily ticker price only - historical data isnt good on cryptocompare
+	crypto_link = "https://min-api.cryptocompare.com/data/histoday?fsym="
+}
 //alpha vantage API
 function getStock(holding, params){
-	console.log("inside GetStock");
+	//console.log("inside GetStock");
 	alpha_link = "https://www.alphavantage.co/query?function=";
 	alpha_func = "";
 	alpha_stock = holding;
 	if (params == "day"){
 		alpha_func="TIME_SERIES_DAILY_ADJUSTED"
-	} else if (params =="month"){
+	} else if (params =="month" ){
 		alpha_func="TIME_SERIES_WEEKLY_ADJUSTED"
-	} else{
+	} else if(params =="current"){
+		alpha_func="TIME_SERIES_INTRADAY&interval=15min"
+	}else{
 		alpha_func="TIME_SERIES_MONTHLY_ADJUSTED"
 	}
 	//construct api request
 	//should be this format: 
 	//https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=MSFT&apikey=demo
 	alpha_link += alpha_func + "&symbol="+ alpha_stock + "&apikey=" + stockapikey
-	console.log("getstockurl: " + alpha_link);
+	//console.log("getstockurl: " + alpha_link);
 	request(alpha_link, function (err, res, body){
 		if (err) throw err;
 		//console.log(body);
+		//if current then only send back most recent time's close price
+		if (params=="current"){
+			//check response
+			////////////////////////////////////////////////////////////////
+			//console.log("body" + body);
+			bodyParsed = JSON.parse(body);
+			//console.log("JSON Parse" + JSON.stringify(temp['Meta Data']));
+
+			if (bodyParsed["Meta Data"]){
+				console.log("Meta Data found");
+				//console.log(JSON.stringify(bodyParsed["Time Series (15min)"]));
+				timeSeries = bodyParsed["Time Series (15min)"];
+				//console.log(timeSeries);
+				timeSeriesCount = 0;
+				timeSeriesStart = "";
+
+				console.log(JSON.stringify(bodyParsed["Meta Data"]));
+				for (var key in timeSeries){
+					console.log(key);
+					timeSeriesCount++;
+					timeSeriesStart = key;
+				}
+				console.log("Start: "+ timeSeriesStart);
+				console.log("total number is : "+timeSeriesCount);
+
+				res = body;
+			}else{
+				console.log("No meta data found");
+				//console.log(body["Time Series (15min)"]);
+				res = "error";
+			};
+		};
 	});
-
-
 }
