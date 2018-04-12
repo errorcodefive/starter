@@ -41,8 +41,8 @@ var sess;
 
 //bodyParser
 //app.use(bodyParser.urlencoded({extended: true}))
-
 //mongodb
+
 var mongo_link = "mongodb://"+mongo_user+":"
 	+mongo_pw+"@ds151070.mlab.com:51070/startpage-test";
 
